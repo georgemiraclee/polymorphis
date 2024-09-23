@@ -3,117 +3,95 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-// Kelas utama Mahasiswa
-class Mahasiswa {
+// Kelas MahasiswaUndip
+class MahasiswaUndip {
     String nama;
     String nim;
-
-    public Mahasiswa(String nama, String nim) {
-        this.nama = nama;
-        this.nim = nim;
-    }
-
-    public String getDetail() {
-        return "Nama: " + nama + "\nNIM: " + nim;
-    }
-}
-
-// Kelas Fakultas (turunan Mahasiswa)
-class Fakultas extends Mahasiswa {
     String fakultas;
-
-    public Fakultas(String nama, String nim, String fakultas) {
-        super(nama, nim);
-        this.fakultas = fakultas;
-    }
-
-    @Override
-    public String getDetail() {
-        return super.getDetail() + "\nFakultas: " + fakultas;
-    }
-}
-
-// Kelas Prodi (turunan Fakultas)
-class Prodi extends Fakultas {
     String prodi;
-
-    public Prodi(String nama, String nim, String fakultas, String prodi) {
-        super(nama, nim, fakultas);
-        this.prodi = prodi;
-    }
-
-    @Override
-    public String getDetail() {
-        return super.getDetail() + "\nProdi: " + prodi;
-    }
-}
-
-// Kelas Angkatan (turunan Prodi)
-class Angkatan extends Prodi {
     int angkatan;
 
-    public Angkatan(String nama, String nim, String fakultas, String prodi, int angkatan) {
-        super(nama, nim, fakultas, prodi);
+    public MahasiswaUndip(String nama, String nim, String fakultas, String prodi, int angkatan) {
+        this.nama = nama;
+        this.nim = nim;
+        this.fakultas = fakultas;
+        this.prodi = prodi;
         this.angkatan = angkatan;
     }
 
-    @Override
     public String getDetail() {
-        return super.getDetail() + "\nAngkatan: " + angkatan;
+        return "Nama: " + nama + "\nNIM: " + nim + "\nFakultas: " + fakultas + "\nProdi: " + prodi + "\nAngkatan: " + angkatan;
+    }
+
+    public String getNIM() {
+        return nim;
     }
 }
 
-// Kelas GUI Program
-public class MahasiswaGUI extends JFrame {
+// Kelas GUI
+public class MahasiswaUndipGUI extends JFrame {
     private JTextArea textArea;
     private JTextField tfNama, tfNIM, tfAngkatan;
     private JComboBox<String> cbFakultas, cbProdi;
-    private JButton btnTambah, btnTampilkan;
-    private List<Mahasiswa> mahasiswaList;
+    private JButton btnTambah, btnTampilkan, btnHapus;
+    private List<MahasiswaUndip> MahasiswaUndipList;
+    private Map<String, String[]> fakultasProdiMap;
 
-    public MahasiswaGUI() {
+    public MahasiswaUndipGUI() {
         setTitle("Data Mahasiswa Undip");
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
 
-        mahasiswaList = new ArrayList<>();
+        MahasiswaUndipList = new ArrayList<>();
+
+        // Peta fakultas dan jurusan
+        fakultasProdiMap = new HashMap<>();
+        fakultasProdiMap.put("Teknik", new String[]{"Informatika", "Teknik Sipil", "Arsitektur"});
+        fakultasProdiMap.put("Ekonomi", new String[]{"Manajemen", "Akuntansi", "Ekonomi Pembangunan"});
+        fakultasProdiMap.put("Hukum", new String[]{"Ilmu Hukum", "Hukum Pidana", "Hukum Perdata"});
+        fakultasProdiMap.put("Kedokteran", new String[]{"Kedokteran Umum", "Farmasi", "Kesehatan Masyarakat"});
 
         // Komponen input
         JLabel lblNama = new JLabel("Nama: ");
         tfNama = new JTextField();
-        tfNama.setPreferredSize(new Dimension(250, 30)); // Set ukuran text field
+        tfNama.setPreferredSize(new Dimension(250, 30));
 
         JLabel lblNIM = new JLabel("NIM: ");
         tfNIM = new JTextField();
-        tfNIM.setPreferredSize(new Dimension(250, 30)); // Set ukuran text field
+        tfNIM.setPreferredSize(new Dimension(250, 30));
 
         JLabel lblFakultas = new JLabel("Fakultas: ");
         cbFakultas = new JComboBox<>(new String[]{"Teknik", "Ekonomi", "Hukum", "Kedokteran"});
-        cbFakultas.setPreferredSize(new Dimension(250, 30)); // Set ukuran combo box
+        cbFakultas.setPreferredSize(new Dimension(250, 30));
 
         JLabel lblProdi = new JLabel("Prodi: ");
-        cbProdi = new JComboBox<>(new String[]{"Informatika", "Manajemen", "Ilmu Hukum", "Kedokteran Umum"});
-        cbProdi.setPreferredSize(new Dimension(250, 30)); // Set ukuran combo box
+        cbProdi = new JComboBox<>(fakultasProdiMap.get("Teknik")); // Default value for Teknik
+        cbProdi.setPreferredSize(new Dimension(250, 30));
 
         JLabel lblAngkatan = new JLabel("Angkatan: ");
         tfAngkatan = new JTextField();
-        tfAngkatan.setPreferredSize(new Dimension(250, 30)); // Set ukuran text field
+        tfAngkatan.setPreferredSize(new Dimension(250, 30));
 
         // Tombol
         btnTambah = new JButton("Tambah Data");
-        btnTambah.setPreferredSize(new Dimension(150, 30)); // Set ukuran tombol
+        btnTambah.setPreferredSize(new Dimension(150, 30));
 
         btnTampilkan = new JButton("Tampilkan Semua Data");
-        btnTampilkan.setPreferredSize(new Dimension(200, 30)); // Set ukuran tombol
+        btnTampilkan.setPreferredSize(new Dimension(200, 30));
+
+        btnHapus = new JButton("Hapus Data");
+        btnHapus.setPreferredSize(new Dimension(150, 30));
 
         // Area Teks
         textArea = new JTextArea(10, 30);
         textArea.setEditable(false);
         textArea.setBackground(Color.LIGHT_GRAY);
-        textArea.setPreferredSize(new Dimension(400, 200)); // Perbesar area teks
+        textArea.setPreferredSize(new Dimension(400, 200));
 
         // Layout
         GridBagConstraints gbc = new GridBagConstraints();
@@ -164,6 +142,9 @@ public class MahasiswaGUI extends JFrame {
         add(btnTambah, gbc);
         gbc.gridx = 1;
         add(btnTampilkan, gbc);
+        gbc.gridx = 0;
+        gbc.gridy++;
+        add(btnHapus, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
@@ -175,7 +156,7 @@ public class MahasiswaGUI extends JFrame {
         btnTambah.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                tambahDataMahasiswa();
+                tambahDataMahasiswaUndip();
             }
         });
 
@@ -185,19 +166,41 @@ public class MahasiswaGUI extends JFrame {
                 tampilkanSemuaData();
             }
         });
+
+        btnHapus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hapusDataMahasiswaUndip();
+            }
+        });
+
+        // Event listener untuk combo box Fakultas
+        cbFakultas.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedFakultas = (String) cbFakultas.getSelectedItem();
+                updateProdiComboBox(selectedFakultas);
+            }
+        });
     }
 
-    private void tambahDataMahasiswa() {
+    private void updateProdiComboBox(String fakultas) {
+        cbProdi.removeAllItems();
+        for (String prodi : fakultasProdiMap.get(fakultas)) {
+            cbProdi.addItem(prodi);
+        }
+    }
+
+    private void tambahDataMahasiswaUndip() {
         String nama = tfNama.getText();
         String nim = tfNIM.getText();
         String fakultas = (String) cbFakultas.getSelectedItem();
         String prodi = (String) cbProdi.getSelectedItem();
         int angkatan = Integer.parseInt(tfAngkatan.getText());
 
-        Mahasiswa mahasiswa = new Angkatan(nama, nim, fakultas, prodi, angkatan);
-        mahasiswaList.add(mahasiswa);
+        MahasiswaUndip mahasiswa = new MahasiswaUndip(nama, nim, fakultas, prodi, angkatan);
+        MahasiswaUndipList.add(mahasiswa);
 
-        // Reset form setelah menambah data
         tfNama.setText("");
         tfNIM.setText("");
         tfAngkatan.setText("");
@@ -209,17 +212,37 @@ public class MahasiswaGUI extends JFrame {
 
     private void tampilkanSemuaData() {
         StringBuilder sb = new StringBuilder();
-        for (Mahasiswa m : mahasiswaList) {
+        for (MahasiswaUndip m : MahasiswaUndipList) {
             sb.append(m.getDetail()).append("\n\n");
         }
         textArea.setText(sb.toString());
+    }
+
+    private void hapusDataMahasiswaUndip() {
+        String nim = tfNIM.getText();
+        boolean found = false;
+
+        for (int i = 0; i < MahasiswaUndipList.size(); i++) {
+            if (MahasiswaUndipList.get(i).getNIM().equals(nim)) {
+                MahasiswaUndipList.remove(i);
+                found = true;
+                JOptionPane.showMessageDialog(this, "Data mahasiswa dengan NIM " + nim + " berhasil dihapus!");
+                break;
+            }
+        }
+
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "Data mahasiswa dengan NIM " + nim + " tidak ditemukan!");
+        }
+
+        tfNIM.setText("");
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MahasiswaGUI().setVisible(true);
+                new MahasiswaUndipGUI().setVisible(true);
             }
         });
     }
